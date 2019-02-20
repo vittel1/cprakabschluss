@@ -1,6 +1,8 @@
+#define _GNU_SOURCE
 #include "data.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 struct data
 {
