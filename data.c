@@ -8,7 +8,7 @@ struct data
 {
   //char *const is a constant pointer to a char
   // the value being pointed at can change but the pointer can't (similar to a reference).
-  char const* string;
+  char *string;
   int refcount; //Array?
   int laenge;
   int typ; //0 String, 1 BLOP
@@ -17,23 +17,38 @@ struct data
 /* "content" is a null-terminated string. */
 data* data_new_string (char const* content)
 {
-  struct data *data = malloc(sizeof *data);
-  data->string = content;
+  struct data *data;
+  data = malloc(sizeof(struct data));
+  if(data == NULL) {
+    return NULL;
+  }
   data->refcount = 0;
-  data->laenge = strlen(content);
   data->typ = 0;
+  data->laenge = strlen(content);
+  data->string = malloc(sizeof(char) * (data->laenge + 1));
+  //TODO
+  strcpy(data->string, content);
   return data;
 }
 
 /* "content" is a blob of length "length". */
 data* data_new_blob (char const* content, unsigned int length)
 {
-  struct data *data = malloc(sizeof *data);
-  //TODO
-  data->string = content;
+  struct data *data;
+  data = malloc(sizeof(struct data));
+  if(data == NULL) {
+    return NULL;
+  }
   data->refcount = 0;
-  data->laenge = length;
   data->typ = 1;
+  data->laenge = length;
+  data->string = malloc(sizeof(char) * (length + 1));
+  //data->string = content;
+  //TODO
+  for(unsigned int i = 0; i < length; i++) {
+    data->string[i] = content[i];
+  }
+ //strcpy(data->string, content);
   return data;
 }
 
@@ -46,11 +61,10 @@ data* data_ref (data* data)
 /* Frees memory allocated by "data" if reference count reaches 0. */
 void data_unref (data* data)
 {
-  data->refcount = data->refcount -1;
+  data->refcount = data->refcount - 1;
   if( data->refcount == 0) {
-    //free(data->string);
+    free(data->string);
     free(data);
-    data = NULL;
   }
 }
 
@@ -71,8 +85,10 @@ unsigned int data_hash (data const* data)
 {
   char *p = data->string;
   unsigned hash = 5381;
-  while(*p != 0) {
-    hash = ((hash << 5) + hash) + *(p++);
+  for(int i=0; i < data->laenge; i++) {
+    int c = p[i];
+    hash = ((hash << 5) + hash) + c;
+    hash = hash & 0x7fffffff;
   }
   return hash;
 
