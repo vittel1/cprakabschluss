@@ -9,9 +9,10 @@ struct data
   //char *const is a constant pointer to a char
   // the value being pointed at can change but the pointer can't (similar to a reference).
   char *string;
-  int refcount; //Array?
+  int refcount;
   int laenge;
-  int typ; //0 String, 1 BLOP
+  //0 String, 1 BLOP
+  int typ;
 };
 
 /* "content" is a null-terminated string. */
@@ -22,7 +23,7 @@ data* data_new_string (char const* content)
   if(data == NULL) {
     return NULL;
   }
-  data->refcount = 0;
+  data->refcount = 1;
   data->typ = 0;
   data->laenge = strlen(content);
   data->string = malloc(sizeof(char) * (data->laenge + 1));
@@ -39,16 +40,13 @@ data* data_new_blob (char const* content, unsigned int length)
   if(data == NULL) {
     return NULL;
   }
-  data->refcount = 0;
+  data->refcount = 1;
   data->typ = 1;
   data->laenge = length;
   data->string = malloc(sizeof(char) * (length + 1));
-  //data->string = content;
-  //TODO
   for(unsigned int i = 0; i < length; i++) {
     data->string[i] = content[i];
   }
- //strcpy(data->string, content);
   return data;
 }
 
