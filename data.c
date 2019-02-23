@@ -4,31 +4,47 @@
 #include <string.h>
 #include <stdio.h>
 
+/*
+TODO: Char Array
+
+Um später einfacher Strings vergleichen zu können, wird die Länge im Attribut 'laenge' gespeichert.
+
+Reference counting: Der Struct bekommt ein Attribut, das zählt wie oft das aktuelle Objekt referenziert wird.
+Jedes mal, wenn Speicher allokiert wird oder eine Referenz auf das Objekt erzeugt wird, erhöht sich der Zähler.
+Zu beachten ist, dass der Counter bei 1 startet.
+Wenn der Zeiger auf das Objekt entfernt wird, dann wird der Counter dekrementiert. Ist der Counter 0 gibt es keine
+Referenzen mehr auf das Objekt und es kann deallokiert werden (wie es auch ein Garbage Collector tun würde).
+
+Um zu unterscheiden, ob es sich um einen String oder Blob handelt, wird ein Attribut 'typ' erzeugt.
+Dabei steht '0' für einen String und '1' für einen Blob.
+*/
+
 struct data
 {
-  //char *const is a constant pointer to a char
-  // the value being pointed at can change but the pointer can't (similar to a reference).
   char *string;
-  int refcount;
   int laenge;
-  //0 String, 1 BLOP
+  int refcount;
   int typ;
 };
 
-/* "content" is a null-terminated string. */
+/*
+
+ "content" is a null-terminated string.
+ Verwendung von 'strdup', um den Speicher dynamisch zu allokieren. Es wird ein Pointer auf den allokierten Speicher zurückgegeben.
+
+ */
 data* data_new_string (char const* content)
 {
   struct data *data;
   data = malloc(sizeof(struct data));
+  //TODO ist das notwendig? Stand das nichtmal in den Folien?
   if(data == NULL) {
     return NULL;
   }
   data->refcount = 1;
   data->typ = 0;
   data->laenge = strlen(content);
-  data->string = malloc(sizeof(char) * (data->laenge + 1));
-  //TODO
-  strcpy(data->string, content);
+  data->string = strdup(content);
   return data;
 }
 
@@ -37,6 +53,7 @@ data* data_new_blob (char const* content, unsigned int length)
 {
   struct data *data;
   data = malloc(sizeof(struct data));
+  //TODO ist das notwendig? Stand das nichtmal in den Folien?
   if(data == NULL) {
     return NULL;
   }
@@ -50,13 +67,18 @@ data* data_new_blob (char const* content, unsigned int length)
   return data;
 }
 
+/*
+Erhöht den Refercene Counter um 1.
+*/
 data* data_ref (data* data)
 {
   data->refcount++;
   return data;
 }
 
-/* Frees memory allocated by "data" if reference count reaches 0. */
+/*
+Frees memory allocated by "data" if reference count reaches 0.
+*/
 void data_unref (data* data)
 {
   data->refcount = data->refcount - 1;
@@ -66,7 +88,12 @@ void data_unref (data* data)
   }
 }
 
-/* Returns a newly-allocated string that must be freed by the caller. */
+/*
+Returns a newly-allocated string that must be freed by the caller.
+
+TODO Beschreibung asprintf
+
+*/
 char* data_as_string (data const* data)
 {
   char* result;
@@ -79,6 +106,11 @@ char* data_as_string (data const* data)
   return result;
 }
 
+/*
+
+TODO Beschreibung Hashfunktion
+
+*/
 unsigned int data_hash (data const* data)
 {
   char *p = data->string;
@@ -92,6 +124,13 @@ unsigned int data_hash (data const* data)
 
 }
 
+/*
+
+TODO Beschreibung
+
+TODO Implementation
+
+*/
 int data_cmp (data const* a, data const* b)
 {
 //  char const *str2 = b->string;
