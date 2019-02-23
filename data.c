@@ -42,39 +42,42 @@ data* data_new_string (char const* content)
   struct data *data;
   data = malloc(sizeof(struct data));
   if(data == NULL) {
-    //TODO gibts besseres als NULL?
+    printf("Error: Out of memory. \n");
     return NULL;
   }
-  else {
-    data->refcount = 1;
-    data->typ = 0;
-    data->laenge = strlen(content);
-    data->string = strdup(content);
-    return data;
-  }
+  data->refcount = 1;
+  data->typ = 0;
+  data->laenge = strlen(content);
+  data->string = strdup(content);
+  return data;
 }
 
 /* "
-content" is a blob of length "length".
+Im Prinzip passiert in dieser Funktion das gleich wie in data_new_string.
+Für die Variable 'data->laenge' wird der übergebene Wert von 'length' zugewiesen.
+
+Da 'content' nicht mit einem Nullbyte endet, kann z.B. die Funktion strdup nicht verwendet werden,
+da diese ohne ein Nullbyte am Ende des Arrays so lange laufen würde bis sie eins findet. Die Länge
+wäre dann nicht garantiert. Deswegen wird in der for-Schleife jeder einzelne char aus 'content'
+nach 'data->string' kopiert.
+
 */
 data* data_new_blob (char const* content, unsigned int length)
 {
   struct data *data;
   data = malloc(sizeof(struct data));
   if(data == NULL) {
-    //TODO gibts besseres als NULL?
+    printf("Error: Out of memory. \n");
     return NULL;
   }
-  else {
-    data->refcount = 1;
-    data->typ = 1;
-    data->laenge = length;
-    data->string = malloc(sizeof(char) * (length + 1));
-    for(unsigned int i = 0; i < length; i++) {
-      data->string[i] = content[i];
-    }
-    return data;
+  data->refcount = 1;
+  data->typ = 1;
+  data->laenge = length;
+  data->string = malloc(sizeof(char) * (length + 1));
+  for(unsigned int i = 0; i < length; i++) {
+    data->string[i] = content[i];
   }
+  return data;
 }
 
 /*
@@ -87,7 +90,9 @@ data* data_ref (data* data)
 }
 
 /*
-Frees memory allocated by "data" if reference count reaches 0.
+Der Refcount wird um 1 dekrementiert. Falls dieser danach 0 ist, wird auf das Objekt nicht
+mehr referenziert, d.h. es kann gelöscht werden. Dazu allokierte Speicher von 'string' freigegeben.
+Danach wird der Struct 'data' freigegeben.
 */
 void data_unref (data* data)
 {
@@ -95,6 +100,7 @@ void data_unref (data* data)
   if( data->refcount == 0) {
     free(data->string);
     free(data);
+    data = NULL;
   }
 }
 
