@@ -133,16 +133,26 @@ TODO Implementation
 */
 int data_cmp (data const* a, data const* b)
 {
-//  char const *str2 = b->string;
-//  if(a->laenge > b->laenge) {
-//    return 1;
-//  }
-//  else if(a->laenge < b->laenge) {
-//    return -1;
-//  }
-//  else {
-//    return strcmp(str1, str2);
-//  }
- return strcmp(a->string, b->string);
+  if(a->laenge < b->laenge)
+  {
+    return -1;
+  }
+  else if(a->laenge > b->laenge)
+  {
+    return 1;
+  }
+  
+  for(int i = 0; i < a->laenge; i++)
+  {
+    if(a->string[i] < b->string[i])
+    {
+      return -1;
+    }
+    if(a->string[i] > b->laenge[i])
+    {
+      return 1;
+    }
+  }
 
+  return 0;
 }
