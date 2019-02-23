@@ -22,7 +22,7 @@ Dabei steht '0' für einen String und '1' für einen Blob.
 struct data
 {
   char *string;
-  int laenge;
+  unsigned int laenge;
   int refcount;
   int typ;
 };
@@ -110,15 +110,16 @@ char* data_as_string (data const* data)
 
 TODO Beschreibung Hashfunktion
 
+Ist angelegt an den djb2 Hashalgorithmus.
+
 */
 unsigned int data_hash (data const* data)
 {
   char *p = data->string;
-  unsigned hash = 5381;
-  for(int i=0; i < data->laenge; i++) {
-    int c = p[i];
+  unsigned int hash = 5381;
+  for(unsigned int i=0; i < data->laenge; i++) {
+    unsigned int c = p[i];
     hash = ((hash << 5) + hash) + c;
-    hash = hash & 0x7fffffff;
   }
   return hash;
 
@@ -141,18 +142,17 @@ int data_cmp (data const* a, data const* b)
   {
     return 1;
   }
-  
-  for(int i = 0; i < a->laenge; i++)
+
+  for(unsigned int i = 0; i < a->laenge; i++)
   {
     if(a->string[i] < b->string[i])
     {
       return -1;
     }
-    if(a->string[i] > b->laenge[i])
+    if(a->string[i] > b->string[i])
     {
       return 1;
     }
   }
-
   return 0;
 }
