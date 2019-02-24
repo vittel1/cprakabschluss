@@ -26,7 +26,6 @@ Referenzen mehr auf das Objekt und es kann deallokiert werden (wie es auch ein G
 Um zu unterscheiden, ob es sich um einen String oder Blob handelt, wird eine Variable 'typ' erzeugt.
 Dabei steht '0' für einen String und '1' für einen Blob.
 */
-
 struct data
 {
   char *string;
@@ -43,7 +42,7 @@ Fehlerbehandlung in C muss die extra angegeben werden. Nur wenn erfolgreich allo
 Die Funktion 'strlen' gibt die Länge des Strings zurück. Das Nullbyte am Ende wird nicht gezählt.
 
 Es wird 'strdup' verwendet, um den Speicher dynamisch zu allokieren. Es wird ein Pointer auf den allokierten Speicher zurückgegeben.
- */
+*/
 data* data_new_string (char const* content)
 {
   struct data *data;
@@ -114,7 +113,6 @@ void data_unref (data* data)
   }
 }
 
-
 /*
 Gibt, je nach Typ der übergebenen data, einen String zurück.
 Wenn der Parameter data bei seiner Initialisierung einen String erhalten hat
@@ -152,7 +150,6 @@ unsigned int data_hash (data const* data)
     hash = ((hash << 5) + hash) + c;
   }
   return hash;
-
 }
 
 /*
